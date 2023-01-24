@@ -1439,7 +1439,10 @@ void ElectronBrowserClient::OverrideURLLoaderFactoryParams(
 bool ElectronBrowserClient::PreSpawnChild(sandbox::TargetPolicy* policy,
                                           sandbox::mojom::Sandbox sandbox_type,
                                           ChildSpawnFlags flags) {
-  sandbox::ResultCode result = policy->GetConfig()->AddRule(
+  sandbox::TargetConfig* config = policy->GetConfig();
+  if (config->IsConfigured())
+    return true;
+  sandbox::ResultCode result = config->AddRule(
       sandbox::SubSystem::kFiles, sandbox::Semantics::kFilesAllowAny,
       L"\\??\\pipe\\crashpad_*");
   if (result != sandbox::SBOX_ALL_OK)
